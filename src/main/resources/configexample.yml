@@ -144,10 +144,3 @@ listener:
 
   newMonth:
     #broadcast: "It is now &1%month%"
-
-# CalendarEvents is on bStats: https://bstats.org/plugin/bukkit/CalendarEvents
-# If you don't want any anonymous data to be send, you can opt it out here.
-bstats:
-  # Please consider leaving this enabled.
-  # Having statistics helps me to see in which projects/features I should invest more time.
-  disabled: false

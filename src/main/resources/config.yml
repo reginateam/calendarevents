@@ -5,6 +5,3 @@ listener:
 settings:
   offsetHours: 0
   language: "ko"
-
-bstats:
-  disabled: false
