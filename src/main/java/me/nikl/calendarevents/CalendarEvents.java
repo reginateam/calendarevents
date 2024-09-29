@@ -52,6 +52,7 @@ public class CalendarEvents extends JavaPlugin {
         this.configurationFile = new File(this.getDataFolder().toString() + File.separatorChar + "config.yml");
         if (!configurationFile.exists()) {
             this.saveResource("config.yml", false);
+            this.saveResource("configexample.yml", false);
         }
         try {
             this.configuration = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(configurationFile), Charsets.UTF_8));
