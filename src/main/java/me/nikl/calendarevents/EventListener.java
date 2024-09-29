@@ -1,7 +1,6 @@
 package me.nikl.calendarevents;
 
-import me.nikl.nmsutilities.NmsUtility;
-import me.nikl.nmsutilities.NmsFactory;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -26,7 +25,6 @@ import java.util.logging.Level;
  */
 public class EventListener implements Listener {
     private CalendarEvents plugin;
-    private NmsUtility nms;
     private Map<String, ArrayList<String>> commands;
     private Map<String, List<CommandAction>> commandsWithPerm;
     private Map<String, String> broadcast;
@@ -38,16 +36,6 @@ public class EventListener implements Listener {
 
     public EventListener(CalendarEvents plugin, Set<String> labels) {
         this.plugin = plugin;
-        this.nms = NmsFactory.getNmsUtility();
-
-        // checking for null nms later
-        if (nms == null) {
-            plugin.getLogger().warning(" The following functions of this plugin are");
-            plugin.getLogger().warning("      not supported for your server version:");
-            plugin.getLogger().warning(" - Title messages");
-            plugin.getLogger().warning(" - Actionbar messages");
-            plugin.getLogger().warning(" Everything else will still function properly!");
-        }
         this.labels = labels;
         loadListener();
     }
@@ -179,38 +167,54 @@ public class EventListener implements Listener {
             }
 
             // check for actionbar
-            if (actionBars.get(label) != null && this.nms != null) {
+            if (actionBars.get(label) != null) {
                 ActionBar actionBar = this.actionBars.get(label);
                 String bar = setEventPlaceholders(actionBar.bar, event);
                 if (actionBar.perm == null || actionBar.perm.equals("")) {
                     // no permission => send to every player
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        nms.sendActionbar(player, placeholders(player, bar).replace("%player%", player.getName()));
+                        player.sendActionBar(Component.text(placeholders(player, bar).replace("%player%", player.getName())));
                     }
                 } else {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         // check for permission node first
                         if (!player.hasPermission(actionBar.perm)) continue;
-                        nms.sendActionbar(player, placeholders(player, bar).replace("%player%", player.getName()));
+                        player.sendActionBar(Component.text(placeholders(player, bar).replace("%player%", player.getName())));
                     }
                 }
             }
 
             // check for title
-            if (titles.get(label) != null && this.nms != null) {
+            if (titles.get(label) != null) {
                 Title title = this.titles.get(label);
                 String titleString = setEventPlaceholders(title.title, event);
                 String subTitle = setEventPlaceholders(title.subTitle, event);
                 if (title.perm == null || title.perm.equals("")) {
                     // no permission => send to every player
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        nms.sendTitle(player, placeholders(player, titleString).replace("%player%", player.getName()), placeholders(player, subTitle).replace("%player%", player.getName()), title.ticksToDisplay);
+                        player.showTitle(net.kyori.adventure.title.Title.title(
+                                Component.text((placeholders(player, titleString).replace("%player%", player.getName()))),
+                                Component.text(placeholders(player, subTitle).replace("%player%", player.getName())),
+                                net.kyori.adventure.title.Title.Times.times(
+                                        Util.ticksToSeconds(title.ticksToDisplay / 10),
+                                        Util.ticksToSeconds(title.ticksToDisplay),
+                                        Util.ticksToSeconds(title.ticksToDisplay / 10)
+                                )
+                        ));
                     }
                 } else {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         // check for permission node first
                         if (!player.hasPermission(title.perm)) continue;
-                        nms.sendTitle(player, placeholders(player, titleString).replace("%player%", player.getName()), placeholders(player, subTitle).replace("%player%", player.getName()), title.ticksToDisplay);
+                        player.showTitle(net.kyori.adventure.title.Title.title(
+                                Component.text((placeholders(player, titleString).replace("%player%", player.getName()))),
+                                Component.text(placeholders(player, subTitle).replace("%player%", player.getName())),
+                                net.kyori.adventure.title.Title.Times.times(
+                                        Util.ticksToSeconds(title.ticksToDisplay / 10),
+                                        Util.ticksToSeconds(title.ticksToDisplay),
+                                        Util.ticksToSeconds(title.ticksToDisplay / 10)
+                                )
+                        ));
                     }
                 }
             }
